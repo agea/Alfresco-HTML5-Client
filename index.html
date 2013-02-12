@@ -1,0 +1,96 @@
+<!doctype html>
+<html>
+<head>
+<title>Alfresco Cmis Browser KO</title>
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="css/bootstrap/css/bootstrap.min.css">
+<link rel="stylesheet" href="css/fontawesome/css/font-awesome.min.css">
+<!--[if IE 7]>
+	<link rel="stylesheet" href="css/fontawesome/css/font-awesome-ie7.min.css">
+<![endif]-->
+
+<script src="js/lib/head.min.js"></script>
+</head>
+<body id="body">
+
+	<div data-bind="foreach: alerts">
+		<div data-bind="css: {'alert-error': error}"
+			class="alert alert-block fade in">
+			<button type="button" class="close"
+				data-bind="click: $root.removeAlert">
+				<i class="icon-remove"></i>
+			</button>
+			<h4 class="alert-heading" data-bind="html: header"></h4>
+			<p class="alert-body" data-bind="html: text"></p>
+		</div>
+	</div>
+
+	<div class="container-fluid" data-bind="if:obj">
+
+		<h1 data-bind="text: obj().properties['cmis:name'].value"></h1>
+
+
+		<ul class="breadcrumb" data-bind="foreach: pathElements">
+		  <li data-bind="if: $index()+1!=$root.pathElements().length,
+		  			css: {'active' : $index()+1==$root.pathElements().length}">
+				<!-- ko if: $index-->
+        		<a data-bind="text: $data, 
+        			attr:{href:'#' + $root.pathElements().slice(0,$index()+1).join('/') }" >data</a>
+    			<!-- /ko -->            	
+				<!-- ko ifnot: $index -->
+        		<a href="#" ><i class="icon-home"></i></a>
+    			<!-- /ko -->
+    			<span class="divider">/</span>
+    		</li>
+			<li data-bind="if: $index()+1==$root.pathElements().length">
+				<span data-bind="text:$data,css:{'icon-home':$index()==0}"></span>
+			</li>
+		  </li>
+		</ul>
+
+
+		<div class="row-fluid">
+			<div class="span3">
+				<ul data-bind="template: { name: 'treenode', foreach: tree }"></ul>
+ 
+				<script type="text/html" id="treenode">
+				    <div>
+				    	<a class="icon-folder-close" 
+				    		href="javascript:void(0);" 
+				    		data-bind="click: $root.toggleSubtree,
+				    			css : {'icon-folder-close': !expanded(),
+				    				'icon-folder-open' : expanded()}">
+				    	</a>&nbsp;
+				    	<a data-bind="text: name, attr: {href: '#' + path}"></a>
+						<ul data-bind="template: { name: 'treenode', foreach: tree }"></ul>
+				    </div>
+				</script>
+
+			</div>
+			<div class="span9">
+	    	<section data-bind="with:children">
+	      		<ul data-bind="foreach: objects">
+					<li> 
+						<a data-bind="attr:{href: '#' + $root.path() + object.properties['cmis:name'].value()}">
+							<span data-bind="text: object.properties['cmis:name'].value"></span>
+						</a>
+					</li>
+				</ul>
+			</section>
+			</div>
+  		</div>
+	</div>
+
+	<footer class="well" data-bind="text: ajaxStatus"></footer>
+
+	<script src="js/lib/jquery.min.js"></script>
+	<script src="js/lib/knockout-2.2.0.js"></script>
+	<script src="js/lib/sammy-latest.min.js"></script>
+	<script src="css/bootstrap/js/bootstrap.min.js"></script>
+	<script src="js/lib/knockout.mapping-latest.js"></script>
+	<script src="js/cmisbrowser.js"></script>
+
+</body>
+</html>
+

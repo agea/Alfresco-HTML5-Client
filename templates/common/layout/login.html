@@ -1,0 +1,29 @@
+	<div class="hero-unit">
+	    <h1><i data-bind="css : {'icon-tint' : ajaxStatus()=='ok',
+							'icon-spinner icon-spin' : ajaxStatus()=='working',
+							'icon-warning-sign' : ajaxStatus()=='error',
+							}"> </i>
+			&nbsp;Permantenere</h1>
+  	  <hr/>
+  	  
+		<form class="form-horizontal" id="loginForm">
+  			<div class="control-group">
+			    <label class="control-label" for="inputId">Username</label>
+			    <div class="controls">
+	   				 <input type="text" id="loginUsername" name="u" data-required="true" autofocus>
+    			</div>
+  			</div>
+  			<div class="control-group">
+			    <label class="control-label" for="inputId">Password</label>
+			    <div class="controls">
+	   				 <input type="password" id="loginPassword" name="p" data-required="true">
+    			</div>
+  			</div>
+  		</form>
+  	 
+    	<a href="#" class="btn btn-large btn-primary" 
+    		onclick="if($( '#loginForm' ).parsley( 'validate' )) {$.get('/Xman2/extlogin.seam?u='+$('#loginUsername').val()+'&p='+$('#loginPassword').val(),function(){xman.postLogin()})}">
+    		<i class="icon-signin"></i>&nbsp;Login
+    	</a>
+     
+    </div>

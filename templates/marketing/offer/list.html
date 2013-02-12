@@ -1,0 +1,26 @@
+<h1 data-bind="text: msg('offerList')"></h1>
+
+<table class="table table-striped" id="offerlist" >
+	<thead>
+		<tr>
+			<th colspan="2">
+				<span data-bind="text: offerList.size"></span>
+				<span data-bind="text: msg('offers')"></span>
+		    	<a class="btn btn-primary" type="button" 
+		    		data-bind="text: msg('add')"
+			    	href="#marketing/offer/edit"
+		    		>add</a>
+			</th>
+		</tr>
+		<tr>
+			<th data-bind="text: msg('id')">id</th>
+			<th data-bind="text: msg('name')">name</th>
+		</tr>
+	</thead>
+	<tbody data-bind="foreach: offerList.list">
+		<tr>
+			<td data-bind="text: offerId"></td>
+			<td data-bind="text: name"></td>
+		</tr>
+	</tbody>
+</table>
