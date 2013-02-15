@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
 <head>
-<title>Alfresco Cmis Browser KO</title>
+<title>Alfresco HTML5</title>
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="css/bootstrap/css/bootstrap.min.css">
@@ -110,9 +110,9 @@
 						    	>
 						    	<i style="font-size: 80px" class="icon-folder-close-alt"></i>
 							</a>
-							<div style="width: 200px; overflow: hidden;margin-left: 4px;">
-								<div data-bind="text: object.properties['cmis:name'].value"></div>
-							</div>
+								<a style="position:relative; top: 35px;" data-bind="attr:{
+								href: '#' + $root.path() + object.properties['cmis:name'].value()},
+								text: object.properties['cmis:name'].value"></a>
 							<!-- /ko -->
 
 	      			</div>
