@@ -80,10 +80,27 @@
 						    	+ '/content/thumbnails/doclib?c=queue&ph=true) center no-repeat'}"
 						    	>
 							</a>
-							<dl>
-								<dt data-bind="text: object.properties['cmis:name'].value"></dt>
-								<dd data-bind="text: object.properties['cmis:contentStreamMimeType'].value"></dd>
-							</dl>
+							<div style="width: 200px; overflow: hidden;padding-left: 2px;">
+								<div><a data-bind="attr:{
+								href: '#' + $root.path() + object.properties['cmis:name'].value()},
+								text: object.properties['cmis:name'].value"></a>
+								
+								</div>
+								<a href="" class="pull-right" target="_blank" data-bind="attr: {title: cmis.readableFileSize(object.properties['cmis:contentStreamLength'].value()),
+									href: cmis.repo.rootFolderUrl+'?cmisselector=content&objectId=' + object.properties['cmis:objectId'].value()}">
+										<i class="icon-2x icon-download-alt"></i>
+								</a>
+								<div>
+									<i class="icon-user"></i>
+									<span data-bind="text: object.properties['cmis:lastModifiedBy'].value()"></span>
+								</div>
+								<div>
+									<span data-bind="text: cmis.readableFileSize(object.properties['cmis:contentStreamLength'].value())"></span>
+								</div>
+								<div>
+									<span class="label" data-bind="text: object.properties['cmis:versionLabel'].value()"></span>
+								</div>
+							</div>
 							<!-- /ko -->
 
 	      					<!-- ko if: object.properties['cmis:baseTypeId'].value() != 'cmis:document' -->
@@ -93,9 +110,9 @@
 						    	>
 						    	<i style="font-size: 80px" class="icon-folder-close-alt"></i>
 							</a>
-							<dl>
-								<dt data-bind="text: object.properties['cmis:name'].value"></dt>
-							</dl>
+							<div style="width: 200px; overflow: hidden;margin-left: 4px;">
+								<div data-bind="text: object.properties['cmis:name'].value"></div>
+							</div>
 							<!-- /ko -->
 
 	      			</div>
