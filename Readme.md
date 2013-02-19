@@ -15,3 +15,11 @@ At the moment is implemented a simple folder browsing with document preview and 
 *  Download [here](https://github.com/agea/Alfresco-HTML5-Client/archive/master.zip)
 *  Extract the .zip and copy the Alfresco-HTML5-Client folder in tomcat/webapps/ROOT of your Alfresco installation
 *  Access http://localhost:8080/Alfresco-HTML5-Client
+
+#TODO
+
+*  Write support
+*  Real and functional document view
+*  Internationalization
+*  Aspect properties support
+*  Customization support
