@@ -14,119 +14,161 @@
 </head>
 <body id="body">
 
-	<div data-bind="foreach: alerts">
-		<div data-bind="css: {'alert-error': error}"
-			class="alert alert-block fade in">
-			<button type="button" class="close"
-				data-bind="click: $root.removeAlert">
-				<i class="icon-remove"></i>
-			</button>
-			<h4 class="alert-heading" data-bind="html: header"></h4>
-			<p class="alert-body" data-bind="html: text"></p>
+
+	<div class="container-fluid" >
+
+		<div data-bind="foreach: alerts">
+			<div data-bind="css: {'alert-error': error}"
+				class="alert alert-block fade in">
+				<button type="button" class="close"
+					data-bind="click: $root.removeAlert">
+					<i class="icon-remove"></i>
+				</button>
+				<h4 class="alert-heading" data-bind="html: header"></h4>
+				<p class="alert-body" data-bind="html: text"></p>
+			</div>
 		</div>
-	</div>
 
-	<div class="container-fluid" data-bind="if:obj">
-
-		<h1 data-bind="text: obj().properties['cmis:name'].value"></h1>
+		<!-- ko if: obj -->
+			<h1 data-bind="text: obj().properties['cmis:name'].value"></h1>
 
 
-		<ul class="breadcrumb" data-bind="foreach: pathElements">
-		  <li data-bind="if: $index()+1!=$root.pathElements().length,
-		  			css: {'active' : $index()+1==$root.pathElements().length}">
-				<!-- ko if: $index-->
-        		<a data-bind="text: $data, 
-        			attr:{href:'#' + $root.pathElements().slice(0,$index()+1).join('/') }" >data</a>
-    			<!-- /ko -->            	
-				<!-- ko ifnot: $index -->
-        		<a href="#" ><i class="icon-home"></i></a>
-    			<!-- /ko -->
-    			<span class="divider">/</span>
-    		</li>
-			<li data-bind="if: $index()+1==$root.pathElements().length">
-				<span data-bind="text:$data,css:{'icon-home':$index()==0}"></span>
-			</li>
-		  </li>
-		</ul>
+			<ul class="breadcrumb" data-bind="foreach: pathElements">
+			  <li data-bind="if: $index()+1!=$root.pathElements().length,
+			  			css: {'active' : $index()+1==$root.pathElements().length}">
+					<!-- ko if: $index-->
+	        		<a data-bind="text: $data, 
+	        			attr:{href:'#' + $root.pathElements().slice(0,$index()+1).join('/') }" >data</a>
+	    			<!-- /ko -->            	
+					<!-- ko ifnot: $index -->
+	        		<a href="#" ><i class="icon-home"></i></a>
+	    			<!-- /ko -->
+	    			<span class="divider">/</span>
+	    		</li>
+				<li data-bind="if: $index()+1==$root.pathElements().length">
+					<span data-bind="text:$data,css:{'icon-home':$index()==0}"></span>
+				</li>
+			  </li>
+			</ul>
 
 
-		<div class="row-fluid">
-			<div class="span3">
-				<ul data-bind="template: { name: 'treenode', foreach: tree }"></ul>
- 
-				<script type="text/html" id="treenode">
-				    <div>
-				    	<a class="icon-folder-close" 
-				    		href="javascript:void(0);" 
-				    		data-bind="click: $root.toggleSubtree,
-				    			css : {'icon-folder-close': !expanded(),
-				    				'icon-folder-open' : expanded()}">
-				    	</a>&nbsp;
-				    	<a data-bind="text: name, attr: {href: '#' + path}"></a>
-						<ul data-bind="template: { name: 'treenode', foreach: tree }"></ul>
-				    </div>
-				</script>
+			<div class="row-fluid">
+				<div class="span3">
+					<ul data-bind="template: { name: 'treenode', foreach: tree }"></ul>
+	 
+					<script type="text/html" id="treenode">
+					    <div>
+					    	<a class="icon-folder-close" 
+					    		href="javascript:void(0);" 
+					    		data-bind="click: $root.toggleSubtree,
+					    			css : {'icon-folder-close': !expanded(),
+					    				'icon-folder-open' : expanded()}">
+					    	</a>&nbsp;
+					    	<a data-bind="text: name, attr: {href: '#' + path}"></a>
+							<ul data-bind="template: { name: 'treenode', foreach: tree }"></ul>
+					    </div>
+					</script>
 
-			</div>
-			<div class="span9">
-	    	<section data-bind="with:children">
-	      		<div class="thumbnails" data-bind="foreach: objects">
-	      			<div class="thumbnail pull-left" style="height: 118px; width: 310px; margin-right: 10px; margin-bottom: 10px" >
-	      					<!-- ko if: object.properties['cmis:baseTypeId'].value() == 'cmis:document' -->
-							<a class="pull-left" data-bind="attr:{
-								href: '#' + $root.path() + object.properties['cmis:name'].value(),
-								style: 'margin:4px; height: 100px; width: 100px; background: url(/alfresco/service/api/node/'
-						    	+ object.properties['alfcmis:nodeRef'].value().replace(':/','')
-						    	+ '/content/thumbnails/doclib?c=queue&ph=true) center no-repeat'}"
-						    	>
-							</a>
-							<div style="width: 200px; overflow: hidden;padding-left: 2px;">
-								<div><a data-bind="attr:{
-								href: '#' + $root.path() + object.properties['cmis:name'].value()},
-								text: object.properties['cmis:name'].value"></a>
-								
-								</div>
-								<a href="" class="pull-right" target="_blank" data-bind="attr: {title: cmis.readableFileSize(object.properties['cmis:contentStreamLength'].value()),
-									href: cmis.repo.rootFolderUrl+'?cmisselector=content&objectId=' + object.properties['cmis:objectId'].value()}">
-										<i class="icon-2x icon-download-alt"></i>
-								</a>
-								<div>
-									<i class="icon-user"></i>
-									<span data-bind="text: object.properties['cmis:lastModifiedBy'].value()"></span>
-								</div>
-								<div>
-									<span data-bind="text: cmis.readableFileSize(object.properties['cmis:contentStreamLength'].value())"></span>
-								</div>
-								<div>
-									<span class="label" data-bind="text: object.properties['cmis:versionLabel'].value()"></span>
-								</div>
-							</div>
-							<!-- /ko -->
-
-	      					<!-- ko if: object.properties['cmis:baseTypeId'].value() != 'cmis:document' -->
-							<a class="pull-left" data-bind="attr:{
-								href: '#' + $root.path() + object.properties['cmis:name'].value(),
-								style: 'padding:10px;margin:4px; height: 100px; width: 100px;'}"
-						    	>
-						    	<i style="font-size: 80px" class="icon-folder-close-alt"></i>
-							</a>
-								<a style="position:relative; top: 35px;" data-bind="attr:{
-								href: '#' + $root.path() + object.properties['cmis:name'].value()},
-								text: object.properties['cmis:name'].value"></a>
-							<!-- /ko -->
-
-	      			</div>
 				</div>
-			</section>
-			</div>
-  		</div>
+				<div class="span9">
+				<section data-bind="if: obj().properties['cmis:baseTypeId'].value() == 'cmis:document'">
+
+					<div class="btn-group pull-right">
+					  <a class="btn" data-bind="attr:{href: window.location.href}">
+						<i class="icon-2x icon-link"></i>
+					  </a>
+					  <a href="" class="btn" target="_blank" data-bind="attr: {title: cmis.readableFileSize(obj().properties['cmis:contentStreamLength'].value()),
+						href: cmis.repo.rootFolderUrl+'?cmisselector=content&objectId=' + obj().properties['cmis:objectId'].value()}">
+						<i class="icon-2x icon-download-alt"></i>
+					</a>
+					</div>
+
+					<div class="thumbnail"> 
+					<img data-bind="attr: {src: '/alfresco/service/api/node/'
+							    	+ obj().properties['alfcmis:nodeRef'].value().replace(':/','')
+							    	+ '/content/thumbnails/imgpreview?c=queue&ph=true'}" />
+					</div>
+					<table class="table table-hover" data-bind="foreach:_.keys(obj().properties)">
+						<tbody>
+							<!-- ko if: $data.indexOf('cmis:')==0 -->
+								<tr data-bind="with: $root.obj().properties[$data]">
+									<th data-bind="text: displayName"></th>
+									<!-- ko if: type()=='datetime'-->
+										<td data-bind="text: new Date(value())"></td>
+									<!-- /ko -->
+									<!-- ko if: type()=='integer'-->
+										<td data-bind="text: cmis.readableFileSize(value())"></td>
+									<!-- /ko -->
+									<!-- ko if: type()!='integer' && type()!='datetime'-->
+										<td data-bind="text: value"></td>
+									<!-- /ko -->									
+								</tr>
+							<!-- /ko -->
+						</tbody>
+					</table>
+				</section>
+
+
+		    	<section data-bind="with:children">
+		      		<div class="thumbnails" data-bind="foreach: objects">
+		      			<div class="thumbnail pull-left" style="height: 118px; width: 310px; margin-right: 10px; margin-bottom: 10px" >
+		      					<!-- ko if: object.properties['cmis:baseTypeId'].value() == 'cmis:document' -->
+								<a class="pull-left" data-bind="attr:{
+									href: '#' + $root.path() + object.properties['cmis:name'].value(),
+									style: 'margin:4px; height: 100px; width: 100px; background: url(/alfresco/service/api/node/'
+							    	+ object.properties['alfcmis:nodeRef'].value().replace(':/','')
+							    	+ '/content/thumbnails/doclib?c=queue&ph=true) center no-repeat'}"
+							    	>
+								</a>
+								<div style="width: 200px; overflow: hidden;padding-left: 2px;">
+									<div><a data-bind="attr:{
+									href: '#' + $root.path() + object.properties['cmis:name'].value()},
+									text: object.properties['cmis:name'].value"></a>
+									
+									</div>
+									<a href="" class="pull-right" target="_blank" data-bind="attr: {title: cmis.readableFileSize(object.properties['cmis:contentStreamLength'].value()),
+										href: cmis.repo.rootFolderUrl+'?cmisselector=content&objectId=' + object.properties['cmis:objectId'].value()}">
+											<i class="icon-2x icon-download-alt"></i>
+									</a>
+									<div>
+										<i class="icon-user"></i>
+										<span data-bind="text: object.properties['cmis:lastModifiedBy'].value()"></span>
+									</div>
+									<div>
+										<span data-bind="text: cmis.readableFileSize(object.properties['cmis:contentStreamLength'].value())"></span>
+									</div>
+									<div>
+										<span class="label" data-bind="text: object.properties['cmis:versionLabel'].value()"></span>
+									</div>
+								</div>
+								<!-- /ko -->
+
+		      					<!-- ko if: object.properties['cmis:baseTypeId'].value() != 'cmis:document' -->
+								<a class="pull-left" data-bind="attr:{
+									href: '#' + $root.path() + object.properties['cmis:name'].value(),
+									style: 'padding:10px;margin:4px; height: 100px; width: 100px;'}"
+							    	>
+							    	<i style="font-size: 80px" class="icon-folder-close-alt"></i>
+								</a>
+									<a style="position:relative; top: 35px;" data-bind="attr:{
+									href: '#' + $root.path() + object.properties['cmis:name'].value()},
+									text: object.properties['cmis:name'].value"></a>
+								<!-- /ko -->
+
+		      			</div>
+					</div>
+				</section>
+				</div>
+	  		</div>
+	  	<!-- /ko -->
 	</div>
 
-	<footer class="well" data-bind="text: ajaxStatus"></footer>
+	<footer data-bind="if: ajaxStatus()!='ok'"> <span data-bind="text: ajaxStatus"></span></footer>
 
 	<script src="js/lib/jquery.min.js"></script>
 	<script src="js/lib/knockout-2.2.0.js"></script>
 	<script src="js/lib/sammy-latest.min.js"></script>
+	<script src="js/lib/underscore-min.js"></script>
 	<script src="css/bootstrap/js/bootstrap.min.js"></script>
 	<script src="js/lib/knockout.mapping-latest.js"></script>
 	<script src="js/cmisbrowser.js"></script>
