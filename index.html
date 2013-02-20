@@ -16,6 +16,7 @@
 
 
 	<div class="container-fluid" >
+		
 
 		<div data-bind="foreach: alerts">
 			<div data-bind="css: {'alert-error': error}"
@@ -30,8 +31,24 @@
 		</div>
 
 		<!-- ko if: obj -->
-			<h1 data-bind="text: obj().properties['cmis:name'].value"></h1>
+		<div class="row">
 
+			<h1 class="span9" data-bind="text: obj().properties['cmis:name'].value"></h1>
+			<div class="span3 form-search">
+			  <div class="input-append"  style="position:relative; top: 18px;">
+			    <input type="search" class="span4 search-query" 
+			    	data-bind="value: squery, valueUpdate: 'keyup'">
+			    <a href="javascript:void(0)" type="button" class="btn"><i class="icon-search"></i></a>
+			  </div>
+			</div>
+		</div>
+
+		<!-- ko if: sresults -->
+			<div class="well" id="searchresults" >
+				<h3><span data-bind="text: squery"></span> (<span data-bind="text: sresults().numItems"></span>)</h3>
+
+			</div>
+		<!-- /ko -->
 
 			<ul class="breadcrumb" data-bind="foreach: pathElements">
 			  <li data-bind="if: $index()+1!=$root.pathElements().length,
@@ -73,7 +90,9 @@
 				<div class="span9">
 				<section data-bind="if: obj().properties['cmis:baseTypeId'].value() == 'cmis:document'">
 
-					<div class="btn-group pull-right">
+
+					<div class="thumbnail" style="position:relative;"> 
+					<div class="btn-group" style="position:absolute;right:4px;" >
 					  <a class="btn" data-bind="attr:{href: window.location.href}">
 						<i class="icon-2x icon-link"></i>
 					  </a>
@@ -82,8 +101,6 @@
 						<i class="icon-2x icon-download-alt"></i>
 					</a>
 					</div>
-
-					<div class="thumbnail"> 
 					<img data-bind="attr: {src: '/alfresco/service/api/node/'
 							    	+ obj().properties['alfcmis:nodeRef'].value().replace(':/','')
 							    	+ '/content/thumbnails/imgpreview?c=queue&ph=true'}" />

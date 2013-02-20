@@ -10,6 +10,20 @@ cmis.vm.pathElements = ko.observable();
 cmis.vm.children = ko.observable();
 cmis.vm.objcontent = ko.observable();
 cmis.vm.tree = ko.observableArray();
+cmis.vm.squery = ko.observable();
+cmis.vm.sresults = ko.observable();
+
+
+cmis.vm.squery.subscribe(function(newValue){
+	if (newValue){
+		cmis.query("select * from cmis:document where contains('"+newValue+"')", 
+			function(data){
+				cmis.vm.sresults(data);
+		});
+	} else {
+		cmis.vm.sresults(null);
+	}
+});
 
 // error handling
 cmis.vm.alerts = ko.observableArray();
