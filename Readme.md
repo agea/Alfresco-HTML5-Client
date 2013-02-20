@@ -18,7 +18,7 @@ At the moment is implemented a simple folder browsing with document preview and 
 
 #TODO
 
-*  Search
+*  Pagination
 *  Write support
 *  Real and functional document view
 *  Internationalization
