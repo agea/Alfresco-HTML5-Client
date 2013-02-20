@@ -12,18 +12,24 @@ cmis.vm.objcontent = ko.observable();
 cmis.vm.tree = ko.observableArray();
 cmis.vm.squery = ko.observable();
 cmis.vm.sresults = ko.observable();
+cmis.vm.searching = ko.observable(false);
 
-
-cmis.vm.squery.subscribe(function(newValue){
-	if (newValue){
-		cmis.query("select * from cmis:document where contains('"+newValue+"')", 
+cmis.vm.squery.subscribe(_.throttle(function(newValue){
+	cmis.vm.searching(true);
+	if (_.isEmpty(newValue) || _.isUndefined(newValue)){
+		newValue=null;
+		cmis.vm.sresults(null);
+	} else if (newValue){
+		cmis.vm.sresults(null);
+		cmis.query("select * from cmis:document where contains('ALL:"+newValue+"')", 
 			function(data){
 				cmis.vm.sresults(data);
+				cmis.vm.searching(false);
 		});
 	} else {
 		cmis.vm.sresults(null);
 	}
-});
+},500));
 
 // error handling
 cmis.vm.alerts = ko.observableArray();

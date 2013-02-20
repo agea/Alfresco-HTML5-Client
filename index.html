@@ -29,24 +29,73 @@
 
 		<!-- ko if: obj -->
 		<div class="row">
-			<h1 class="span9" data-bind="text: obj().properties['cmis:name'].value"></h1>
+			<h1 class="span8" style="position:relative;">
+				<a href="#">
+					<img src="/share/res/themes/default/images/app-logo-48.png" alt=" " 
+				style="position:absolute;" data-bind="visible: ajaxStatus()=='ok'" />
+				</a>
+				<i class="icon-spinner icon-spin" data-bind="visible: ajaxStatus()=='working'"
+				style="position:absolute;font-size: 48px;" ></i>
+				<span style="padding-left:64px" data-bind="text: obj().properties['cmis:name'].value"></span>
+			</h1>
 			<div class="span3 form-search">
 			  <div class="input-append"  style="position:relative; top: 18px;">
 			    <input type="search" class="span4 search-query" 
 			    	data-bind="value: squery, valueUpdate: 'keyup'">
-			    <a href="javascript:void(0)" type="button" class="btn"><i class="icon-search"></i></a>
+			    <a href="javascript:void(0)" type="button" class="btn">
+			    	<i data-bind="css: {'icon-search': !searching(), 
+			    		'icon-spinner icon-spin': searching()}"
+			    		class=""></i>
+			    </a>
 			  </div>
 			</div>
 		</div>
 
-		<!-- ko if: sresults -->
-		<div class="well" id="searchresults" >
-			<h3><span data-bind="text: squery"></span> 
-				(<span data-bind="text: sresults().numItems"></span>)
-			</h3>
+		<div class="row-fluid" data-bind="if: sresults">
+			<div class="span12" id="searchresults" >
+				<h3>
+					<a class="pull-right" href="javascript:void(0)" onclick="cmis.vm.squery(null)">
+					<i class="icon-remove"></i></a>
+					<span data-bind="text: squery"></span> 
+					(<span data-bind="text: sresults().numItems"></span>)
+				</h3>
+				<div class="span12 thumbnails" data-bind="foreach: sresults().results">
+					<div class="thumbnail pull-left" style="height: 118px; width: 310px; margin-right: 10px; margin-bottom: 10px" >
+						<a class="pull-left" data-bind="attr:{
+						href: '#' + $root.path() + $data.properties['cmis:name'].value,
+						style: 'margin:4px; height: 100px; width: 100px; background: url(/alfresco/service/api/node/'
+						+ $data.properties['alfcmis:nodeRef'].value.replace(':/','')
+						+ '/content/thumbnails/doclib?c=queue&ph=true) center no-repeat'}"
+						>
+						</a>
+						<div style="width: 200px; overflow: hidden;padding-left: 2px;">
+							<div><a data-bind="attr:{
+								href: '#' + $root.path() + $data.properties['cmis:name'].value},
+								text: $data.properties['cmis:name'].value"></a>
+
+							</div>
+							<a href="" class="pull-right" target="_blank" data-bind="attr: {title: cmis.readableFileSize($data.properties['cmis:contentStreamLength'].value),
+							href: cmis.repo.rootFolderUrl+'?cmisselector=content&objectId=' + $data.properties['cmis:objectId'].value}">
+							<i class="icon-2x icon-download-alt"></i>
+							</a>
+							<div>
+								<i class="icon-user"></i>
+								<span data-bind="text: $data.properties['cmis:lastModifiedBy'].value"></span>
+							</div>
+							<div>
+								<span data-bind="text: cmis.readableFileSize($data.properties['cmis:contentStreamLength'].value)"></span>
+							</div>
+							<div>
+								<span class="label" data-bind="text: $data.properties['cmis:versionLabel'].value"></span>
+							</div>
+						</div>
+
+					</div>
+				</div>
+			<hr/>
+			</div>
 
 		</div>
-		<!-- /ko -->
 
 		<ul class="breadcrumb" data-bind="foreach: pathElements">
 		  <li data-bind="if: $index()+1!=$root.pathElements().length,
@@ -176,8 +225,6 @@
   		</div>
 	  	<!-- /ko -->
 	</div>
-
-	<footer data-bind="if: ajaxStatus()!='ok'"> <span data-bind="text: ajaxStatus"></span></footer>
 
 	<script src="js/lib/jquery.min.js"></script>
 	<script src="js/lib/knockout-2.2.0.js"></script>
