@@ -80,9 +80,18 @@ cmis.getContent = function(url, callback, params) {
 	$.get(url + cmis.toQuery(p), callback);
 };
 
-cmis.query = function(statement, callback) {
-	data={q:statement,cmisaction:'query'};
-	$.post(cmis.repo.repositoryUrl, data, callback);
+cmis.getParentObjects = function(url, callback, params) {
+	var p = params || {};
+	p.cmisselector = 'parents';
+	$.getJSON(url + cmis.toQuery(p), callback);
+};
+
+
+cmis.query = function(statement, callback, params) {
+	var p = params || {};
+	p.q = statement;
+	p.cmisaction = 'query';
+	$.post(cmis.repo.repositoryUrl, p, callback);
 };
 
 cmis.getSubtree = function(objectId, observableArray){
@@ -113,26 +122,35 @@ cmis.toQuery = function(data) {
 cmis.sammy = Sammy(function() {});
 
 cmis.sammy.get(/#(.*)/, function() {
-	var path = this.params['splat'] + "/";
-	path = path.replace("//", "/");
-	cmis.vm.path(path);
-	cmis.vm.pathElements(path.split('/').slice(0,-1));
-	cmis.getObject(cmis.repo.rootFolderUrl + path, function(data) {
-		cmis.vm.obj(ko.mapping.fromJS(data));
-		if(cmis.vm.obj().properties['cmis:baseTypeId'].value() == 'cmis:folder') {
-			cmis.getChildren(cmis.repo.rootFolderUrl + path, function(data) {
-				cmis.vm.children(ko.mapping.fromJS(data));
-			});
-		} else {
-			cmis.vm.children(false);
-			if(cmis.vm.obj().properties['cmis:baseTypeId'].value() == 'cmis:document') {
-				cmis.getContent(cmis.repo.rootFolderUrl + path, function(data) {
-					cmis.vm.objcontent(data);
+	var path = this.params['splat']+'';
+	if (path.indexOf('workspace://')==0){
+		cmis.getParentObjects(cmis.repo.rootFolderUrl,function(pdata){
+			var parentPath = pdata[0].object.properties['cmis:path'].value;
+			cmis.getObject(cmis.repo.rootFolderUrl,function(odata){
+				var oname = odata.properties['cmis:name'].value;
+				window.location.hash=parentPath+'/'+oname;
+			},{objectId:path});
+		},{objectId:path});
+	} else {
+		path = (path+'/').replace("//", "/");
+		cmis.vm.path(path);
+		cmis.vm.pathElements(path.split('/').slice(0,-1));
+		cmis.getObject(cmis.repo.rootFolderUrl + path, function(data) {
+			cmis.vm.obj(ko.mapping.fromJS(data));
+			if(cmis.vm.obj().properties['cmis:baseTypeId'].value() == 'cmis:folder') {
+				cmis.getChildren(cmis.repo.rootFolderUrl + path, function(data) {
+					cmis.vm.children(ko.mapping.fromJS(data));
 				});
+			} else {
+				cmis.vm.children(false);
+				if(cmis.vm.obj().properties['cmis:baseTypeId'].value() == 'cmis:document') {
+					cmis.getContent(cmis.repo.rootFolderUrl + path, function(data) {
+						cmis.vm.objcontent(data);
+					});
+				}
 			}
-		}
-	});
-
+		});
+	}
 });
 
 

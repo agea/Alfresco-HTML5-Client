@@ -62,7 +62,7 @@
 				<div class="span12 thumbnails" data-bind="foreach: sresults().results">
 					<div class="thumbnail pull-left" style="height: 118px; width: 310px; margin-right: 10px; margin-bottom: 10px" >
 						<a class="pull-left" data-bind="attr:{
-						href: '#' + $root.path() + $data.properties['cmis:name'].value,
+						href: '#' + $data.properties['cmis:objectId'].value,
 						style: 'margin:4px; height: 100px; width: 100px; background: url(/alfresco/service/api/node/'
 						+ $data.properties['alfcmis:nodeRef'].value.replace(':/','')
 						+ '/content/thumbnails/doclib?c=queue&ph=true) center no-repeat'}"
@@ -70,7 +70,7 @@
 						</a>
 						<div style="width: 200px; overflow: hidden;padding-left: 2px;">
 							<div><a data-bind="attr:{
-								href: '#' + $root.path() + $data.properties['cmis:name'].value},
+								href: '#' + $data.properties['cmis:objectId'].value},
 								text: $data.properties['cmis:name'].value"></a>
 
 							</div>
