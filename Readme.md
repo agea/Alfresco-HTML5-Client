@@ -1,6 +1,6 @@
 #Alfresco HTML5 Client
 
-A simple alfresco client with written only in HTML5 and Javascript. 
+A simple alfresco client written only in HTML5 and Javascript. 
 
 *NOTE:* This project is still in in its first days of development and it's far from feature complete! 
 
