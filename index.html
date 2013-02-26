@@ -57,9 +57,10 @@
 					<a class="pull-right" href="javascript:void(0)" onclick="cmis.vm.squery(null)">
 					<i class="icon-remove"></i></a>
 					<span data-bind="text: squery"></span> 
-					(<span data-bind="text: sresults().numItems"></span>)
+					(<span data-bind="text: sresults().numItems"></span><span data-bind="if: sresults().hasMoreItems">+</span>)
 				</h3>
-				<div class="span12 thumbnails" data-bind="foreach: sresults().results">
+				<div class="span12 thumbnails"> 
+					<!-- ko foreach: sresults().results -->
 					<div class="thumbnail pull-left" style="height: 118px; width: 310px; margin-right: 10px; margin-bottom: 10px" >
 						<a class="pull-left" data-bind="attr:{
 						href: '#' + $data.properties['cmis:objectId'].value,
@@ -91,6 +92,20 @@
 						</div>
 
 					</div>
+					<!-- /ko -->
+					<!-- ko if: sresults().hasMoreItems -->
+					<div class="thumbnail pull-left" 
+						style="height: 118px; width: 310px; margin-right: 10px; margin-bottom: 10px">
+						<a style="padding: 10px;text-align:center;display:block;" 
+							href="javascript:void(0)"
+							onclick="cmis.nextSearchPage()">
+							<i style="font-size: 80px"  data-bind="css: 
+								{'icon-forward': !searching(), 
+			    				'icon-spinner icon-spin': searching()}" >
+			    			</i>
+						</a>
+					</div>
+					<!-- /ko -->
 				</div>
 			<hr/>
 			</div>

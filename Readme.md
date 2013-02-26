@@ -18,9 +18,9 @@ At the moment is implemented a simple folder browsing with document preview and 
 
 #TODO
 
-*  Pagination
+*  Pagination of folder children
 *  Write support
-*  Real and functional document view
+*  Better document view
 *  Internationalization
 *  Aspect properties support
 *  Customization support

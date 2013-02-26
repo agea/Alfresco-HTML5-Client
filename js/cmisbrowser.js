@@ -11,25 +11,41 @@ cmis.vm.children = ko.observable();
 cmis.vm.objcontent = ko.observable();
 cmis.vm.tree = ko.observableArray();
 cmis.vm.squery = ko.observable();
-cmis.vm.sresults = ko.observable();
+cmis.vm.sresults = ko.observable(null);
 cmis.vm.searching = ko.observable(false);
+cmis.vm.pageSize = ko.observable(50);
+
+cmis.nextSearchPage = function(){
+	cmis.search(cmis.vm.sresults().numItems);
+}
 
 cmis.vm.squery.subscribe(_.throttle(function(newValue){
-	cmis.vm.searching(true);
+	cmis.vm.sresults(null);
 	if (_.isEmpty(newValue) || _.isUndefined(newValue)){
 		newValue=null;
-		cmis.vm.sresults(null);
+		cmis.vm.searching(false);
 	} else if (newValue){
-		cmis.vm.sresults(null);
-		cmis.query("select * from cmis:document where contains('ALL:"+newValue+"')", 
-			function(data){
-				cmis.vm.sresults(data);
-				cmis.vm.searching(false);
-		});
-	} else {
-		cmis.vm.sresults(null);
-	}
+		cmis.search(0);
+	} 
 },500));
+
+cmis.search = function(skipCount){
+	cmis.vm.searching(true);
+	cmis.query("select * from cmis:document where contains('ALL:"
+		+cmis.vm.squery()+"')", 
+		function(data){
+			var res = cmis.vm.sresults();
+			if (!_.isNull(res)){
+				data.results = _.union(res.results, data.results);
+				data.numItems+=res.numItems;					
+			}
+			cmis.vm.sresults(data);
+			cmis.vm.searching(false);
+		},
+	{maxItems:cmis.vm.pageSize(),
+		skipCount: skipCount}
+		);
+}
 
 // error handling
 cmis.vm.alerts = ko.observableArray();
@@ -95,7 +111,8 @@ cmis.query = function(statement, callback, params) {
 };
 
 cmis.getSubtree = function(objectId, observableArray){
-	cmis.query("select cmis:objectId, cmis:name, cmis:path from cmis:folder where in_folder('"+objectId+"')",
+	cmis.query("select cmis:objectId, cmis:name, cmis:path from cmis:folder "+
+		"where in_folder('"+objectId+"') order by cmis:name",
 		function(data){
 			for (var i = 0; i < data.numItems; i++) {
 				var r = data.results[i];
