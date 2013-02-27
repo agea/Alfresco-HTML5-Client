@@ -7,16 +7,30 @@ cmis.vm.root = ko.observable();
 cmis.vm.obj = ko.observable();
 cmis.vm.path = ko.observable();
 cmis.vm.pathElements = ko.observable();
-cmis.vm.children = ko.observable();
+cmis.vm.children = ko.observable(null);
 cmis.vm.objcontent = ko.observable();
 cmis.vm.tree = ko.observableArray();
 cmis.vm.squery = ko.observable();
 cmis.vm.sresults = ko.observable(null);
 cmis.vm.searching = ko.observable(false);
+cmis.vm.fetching = ko.observable(false);
 cmis.vm.pageSize = ko.observable(50);
 
 cmis.nextSearchPage = function(){
 	cmis.search(cmis.vm.sresults().numItems);
+}
+cmis.nextChildrenPage = function(){
+	cmis.vm.fetching(true);
+	cmis.getChildren(cmis.repo.rootFolderUrl + cmis.vm.path(), function(data) {
+		var res = cmis.vm.children();
+		if (!_.isNull(res)){
+			data.objects = _.union(res.objects(), data.objects);
+		}
+		cmis.vm.children(ko.mapping.fromJS(data));
+		cmis.vm.fetching(false);
+	},
+	{maxItems:cmis.vm.pageSize(),
+	skipCount:cmis.vm.children().objects().length});
 }
 
 cmis.vm.squery.subscribe(_.throttle(function(newValue){
@@ -32,7 +46,7 @@ cmis.vm.squery.subscribe(_.throttle(function(newValue){
 cmis.search = function(skipCount){
 	cmis.vm.searching(true);
 	cmis.query("select * from cmis:document where contains('ALL:"
-		+cmis.vm.squery()+"')", 
+		+ cmis.vm.squery() + "')", 
 		function(data){
 			var res = cmis.vm.sresults();
 			if (!_.isNull(res)){
@@ -157,9 +171,9 @@ cmis.sammy.get(/#(.*)/, function() {
 			if(cmis.vm.obj().properties['cmis:baseTypeId'].value() == 'cmis:folder') {
 				cmis.getChildren(cmis.repo.rootFolderUrl + path, function(data) {
 					cmis.vm.children(ko.mapping.fromJS(data));
-				});
+				},{maxItems:cmis.vm.pageSize()});
 			} else {
-				cmis.vm.children(false);
+				cmis.vm.children(null);
 				if(cmis.vm.obj().properties['cmis:baseTypeId'].value() == 'cmis:document') {
 					cmis.getContent(cmis.repo.rootFolderUrl + path, function(data) {
 						cmis.vm.objcontent(data);

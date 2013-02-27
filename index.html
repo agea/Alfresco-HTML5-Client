@@ -97,13 +97,14 @@
 					<div class="thumbnail pull-left" 
 						style="height: 118px; width: 310px; margin-right: 10px; margin-bottom: 10px">
 						<a style="padding: 10px;text-align:center;display:block;" 
-							href="javascript:void(0)"
+							href="javascript:void(0)" data-bind="if: !searching()"
 							onclick="cmis.nextSearchPage()">
-							<i style="font-size: 80px"  data-bind="css: 
-								{'icon-forward': !searching(), 
-			    				'icon-spinner icon-spin': searching()}" >
-			    			</i>
+							<i style="font-size: 80px" class="icon-forward"></i>
 						</a>
+						<!-- ko if: searching() -->
+						<i style="font-size: 80px;text-align:center;display:block;"
+						 class="icon-spinner icon-spin"></i>
+						<!-- /ko -->
 					</div>
 					<!-- /ko -->
 				</div>
@@ -126,6 +127,9 @@
     		</li>
 			<li data-bind="if: $index()+1==$root.pathElements().length">
 				<span data-bind="text:$data,css:{'icon-home':$index()==0}"></span>
+    			<!-- ko with: $root.children-->
+    			(<span data-bind="text: numItems"></span>)
+    			<!-- /ko -->
 			</li>
 		  </li>
 		</ul>
@@ -188,7 +192,8 @@
 
 
 	    	<section data-bind="with:children">
-	      		<div class="thumbnails" data-bind="foreach: objects">
+	      		<div class="thumbnails">
+	      			<!-- ko foreach: objects -->
 	      			<div class="thumbnail pull-left" style="height: 118px; width: 310px; margin-right: 10px; margin-bottom: 10px" >
 	      					<!-- ko if: object.properties['cmis:baseTypeId'].value() == 'cmis:document' -->
 							<a class="pull-left" data-bind="attr:{
@@ -234,6 +239,23 @@
 							<!-- /ko -->
 
 	      			</div>
+	      			<!-- /ko -->
+	      			<!-- ko if: hasMoreItems -->
+					<div class="thumbnail pull-left text-center" 
+						style="height: 118px; width: 310px; margin-right: 10px; margin-bottom: 10px">
+						<a style="padding: 10px;text-align:center;display:block;" 
+							href="javascript:void(0)" data-bind="if: !$root.fetching()"
+							onclick="cmis.nextChildrenPage()">
+							<i style="font-size: 80px"  class="icon-forward" >
+			    			</i>
+						</a>
+						<!-- ko if:$root.fetching -->
+						<i style="font-size: 80px;text-align:center;display:block;" 
+						 class="icon-spinner icon-spin"></i>
+						<!-- /ko -->
+					</div>
+					<!-- /ko -->
+
 				</div>
 			</section>
 			</div>
