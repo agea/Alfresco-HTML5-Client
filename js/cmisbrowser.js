@@ -15,6 +15,10 @@ cmis.vm.sresults = ko.observable(null);
 cmis.vm.searching = ko.observable(false);
 cmis.vm.fetching = ko.observable(false);
 cmis.vm.pageSize = ko.observable(50);
+cmis.vm.loggedIn = ko.observable(false);
+cmis.vm.username = ko.observable();
+cmis.vm.password = ko.observable();
+
 
 cmis.nextSearchPage = function(){
 	cmis.search(cmis.vm.sresults().numItems);
@@ -124,6 +128,11 @@ cmis.query = function(statement, callback, params) {
 	$.post(cmis.repo.repositoryUrl, p, callback);
 };
 
+cmis.updateProperties = function(url,object, callback) {
+	object.cmisaction = 'updateProperties';
+	$.post(url, object, callback);
+};
+
 cmis.getSubtree = function(objectId, observableArray){
 	cmis.query("select cmis:objectId, cmis:name, cmis:path from cmis:folder "+
 		"where in_folder('"+objectId+"') order by cmis:name",
@@ -153,6 +162,9 @@ cmis.toQuery = function(data) {
 cmis.sammy = Sammy(function() {});
 
 cmis.sammy.get(/#(.*)/, function() {
+	if (!cmis.vm.loggedIn()){
+		return;
+	}
 	var path = this.params['splat']+'';
 	if (path.indexOf('workspace://')==0){
 		cmis.getParentObjects(cmis.repo.rootFolderUrl,function(pdata){
@@ -184,7 +196,6 @@ cmis.sammy.get(/#(.*)/, function() {
 	}
 });
 
-
 cmis.sammy.get('', function() {
 	window.location.hash = "/";
 });
@@ -198,20 +209,40 @@ cmis.readableFileSize = function (size) {
         ++i;
     }
     return size.toFixed(1) + ' ' + units[i];
-}
+};
 
-
-// init
-$.getJSON('/alfresco/cmisbrowser', function(data) {
-	cmis.cb = data;
-	for(var repo in cmis.cb) {
-		cmis.repo = cmis.cb[repo];
-	}
-	cmis.getObject(cmis.repo.rootFolderUrl, function(data) {
-		cmis.vm.root(ko.mapping.fromJS(data));
-		cmis.getSubtree(cmis.vm.root().properties['cmis:objectId'].value(), cmis.vm.tree);
-	    ko.applyBindings(cmis.vm);
-		cmis.sammy.run();
+cmis.logout = function(){
+	cmis.vm.loggedIn(false);
+	cmis.vm.username(null);
+	cmis.vm.password(null);
+	$.ajaxSetup({
+  		username: null,
+  		password: null,  		
 	});
-});
+};
+
+cmis.login = function(){
+	$.ajaxSetup({
+  		username: cmis.vm.username(),
+  		password: cmis.vm.password(),  		
+	});
+	// init
+	$.getJSON('/alfresco/cmisbrowser', function(data) {
+		cmis.vm.loggedIn(true);
+		cmis.cb = data;
+		for(var repo in cmis.cb) {
+			cmis.repo = cmis.cb[repo];
+		}
+		cmis.getObject(cmis.repo.rootFolderUrl, function(data) {
+			cmis.vm.root(ko.mapping.fromJS(data));
+			cmis.vm.tree.removeAll();
+			cmis.getSubtree(cmis.vm.root().properties['cmis:objectId'].value(), cmis.vm.tree);
+			cmis.sammy.run();
+		});
+	});
+};
+
+
+ko.applyBindings(cmis.vm);
+
 

@@ -27,6 +27,37 @@
 			</div>
 		</div>
 
+		<!-- ko if: !loggedIn() -->
+		<div class="row-fluid">
+				
+				<div class="span6 offset3 well" style="text-align:center;margin-top:1em;">
+					<h1>Alfresco HTML5 Client</h1>
+					<br/>
+					<form class="forn-horizontal" >
+				      <div class="input-prepend">
+				        <span class="add-on"><i class="icon-user"></i></span>
+				        <input type="text" data-bind="value: username, valueUpdate: 'keyup'" 
+				        	autofocus placeholder="username"/>
+				      </div>
+				      <div class="input-prepend">
+				        <span class="add-on"><i class="icon-key"></i></span>
+				        <input type="password" data-bind="value: password, valueUpdate: 'keyup'"
+				         placeholder="password" />
+				      </div>
+				      <hr/>
+				      <a href="javascript:void(0)" 
+				      	data-bind="css: {disabled: !username() || !password()}"
+				      	onclick="if (cmis.vm.username() && cmis.vm.password()) cmis.login()"
+				      	class="btn btn-primary btn-block btn-large">
+				      	<i class="icon-signin"></i>&nbsp;Login
+				      </a>
+					</form>
+				</div>
+			
+		</div>
+		<!-- /ko -->
+
+		<!-- ko if: loggedIn() -->
 		<!-- ko if: obj -->
 		<div class="row">
 			<h1 class="span8" style="position:relative;">
@@ -261,6 +292,23 @@
 			</div>
   		</div>
 	  	<!-- /ko -->
+	  	<!-- /ko -->
+
+	  	<div class="row-fluid">
+	  		<div class="span12">
+	  			<hr/>
+	  			<p style="text-align:center">
+	  				<a class="btn" href="https://github.com/agea/Alfresco-HTML5-Client">
+	  					<i class="icon-github-alt"></i>&nbsp; About
+	  				</a> 
+
+	  				<a data-bind="visible:loggedIn" class="btn" href="javascript:void(0)" onclick="cmis.logout()">
+	  					<i class="icon-signout"></i>&nbsp; Logout
+	  				</a> 
+
+	  			</p>
+	  		</div>
+	  	</div>
 	</div>
 
 	<script src="js/lib/jquery.min.js"></script>
