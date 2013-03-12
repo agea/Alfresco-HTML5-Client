@@ -37,15 +37,15 @@
 				      <div class="input-prepend">
 				        <span class="add-on"><i class="icon-user"></i></span>
 				        <input type="text" data-bind="value: username, valueUpdate: 'keyup'" 
-				        	autofocus placeholder="username"/>
+				        	autofocus placeholder="username" onkeydown="cmis.loginOnReturn(event)"/>
 				      </div>
 				      <div class="input-prepend">
 				        <span class="add-on"><i class="icon-key"></i></span>
 				        <input type="password" data-bind="value: password, valueUpdate: 'keyup'"
-				         placeholder="password" />
+				         placeholder="password" onkeydown="cmis.loginOnReturn(event)" />
 				      </div>
 				      <hr/>
-				      <a href="javascript:void(0)" 
+				      <a href="javascript:void(0)" id="loginButton"
 				      	data-bind="css: {disabled: !username() || !password()}"
 				      	onclick="if (cmis.vm.username() && cmis.vm.password()) cmis.login()"
 				      	class="btn btn-primary btn-block btn-large">
@@ -209,10 +209,7 @@
 								<!-- ko if: type()=='datetime'-->
 									<td data-bind="text: new Date(value())"></td>
 								<!-- /ko -->
-								<!-- ko if: type()=='integer'-->
-									<td data-bind="text: cmis.readableFileSize(value())"></td>
-								<!-- /ko -->
-								<!-- ko if: type()!='integer' && type()!='datetime'-->
+								<!-- ko if: type()!='datetime'-->
 									<td data-bind="text: value"></td>
 								<!-- /ko -->									
 							</tr>

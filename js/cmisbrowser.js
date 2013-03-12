@@ -128,9 +128,16 @@ cmis.query = function(statement, callback, params) {
 	$.post(cmis.repo.repositoryUrl, p, callback);
 };
 
-cmis.updateProperties = function(url,object, callback) {
-	object.cmisaction = 'updateProperties';
-	$.post(url, object, callback);
+cmis.updateProperties = function(url,objectId, properties, callback) {
+	data = {cmisaction:'update',
+			objectId: objectId}
+	var i = 0;
+	for (var id in properties){
+		data['propertyId['+i+']'] = id;
+		data['propertyValue['+i+']'] = properties[id];
+		i++;
+	}
+	$.post(url, data, callback);
 };
 
 cmis.getSubtree = function(objectId, observableArray){
@@ -200,6 +207,16 @@ cmis.sammy.get('', function() {
 	window.location.hash = "/";
 });
 // various
+
+cmis.loginOnReturn = function (e) {
+    if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
+    	$('#loginButton').click();
+        return false;
+    } else {
+        return true;
+    }
+};
+
 
 cmis.readableFileSize = function (size) {
     var units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
