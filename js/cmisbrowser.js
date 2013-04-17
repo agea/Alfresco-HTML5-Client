@@ -14,11 +14,29 @@ cmis.vm.squery = ko.observable();
 cmis.vm.sresults = ko.observable(null);
 cmis.vm.searching = ko.observable(false);
 cmis.vm.fetching = ko.observable(false);
-cmis.vm.pageSize = ko.observable(50);
+cmis.vm.pageSize = ko.observable(config.pageSize);
+cmis.vm.order = ko.observable(config.orders[0]);
+cmis.vm.orderDir = ko.observable('asc');
 cmis.vm.loggedIn = ko.observable(false);
-cmis.vm.username = ko.observable();
-cmis.vm.password = ko.observable();
+cmis.vm.username = ko.observable(store.get('username'));
+cmis.vm.password = ko.observable(store.get('password'));
+cmis.vm.rememberMe = ko.observable(store.get('rememberMe'));
+cmis.vm.autoLogin = ko.observable(store.get('autoLogin'));
 
+cmis.vm.orderDir.subscribe(function(newValue){
+	cmis.loadPage();
+});
+cmis.vm.order.subscribe(function(newValue){
+	cmis.loadPage();
+});
+
+cmis.switchOrderDir = function(){
+	if (cmis.vm.orderDir()=='asc'){
+		cmis.vm.orderDir('desc');
+	} else {
+		cmis.vm.orderDir('asc');
+	}
+}
 
 cmis.nextSearchPage = function(){
 	cmis.search(cmis.vm.sresults().numItems);
@@ -106,6 +124,7 @@ cmis.getObject = function(url, callback, params) {
 cmis.getChildren = function(url, callback, params) {
 	var p = params || {};
 	p.cmisselector = 'children';
+	p.orderby = cmis.vm.order()[0] + ' ' + cmis.vm.orderDir();
 	$.getJSON(url + cmis.toQuery(p), callback);
 };
 cmis.getContent = function(url, callback, params) {
@@ -119,7 +138,6 @@ cmis.getParentObjects = function(url, callback, params) {
 	p.cmisselector = 'parents';
 	$.getJSON(url + cmis.toQuery(p), callback);
 };
-
 
 cmis.query = function(statement, callback, params) {
 	var p = params || {};
@@ -164,6 +182,23 @@ cmis.toQuery = function(data) {
 };
 
 
+cmis.loadPage = function(){
+	cmis.getObject(cmis.repo.rootFolderUrl + cmis.vm.path(), function(data) {
+		cmis.vm.obj(ko.mapping.fromJS(data));
+		if(cmis.vm.obj().properties['cmis:baseTypeId'].value() == 'cmis:folder') {
+			cmis.getChildren(cmis.repo.rootFolderUrl + cmis.vm.path(), function(data) {
+				cmis.vm.children(ko.mapping.fromJS(data));
+			},{maxItems:cmis.vm.pageSize()});
+		} else {
+			cmis.vm.children(null);
+			if(cmis.vm.obj().properties['cmis:baseTypeId'].value() == 'cmis:document') {
+				cmis.getContent(cmis.repo.rootFolderUrl + cmis.vm.path(), function(data) {
+					cmis.vm.objcontent(data);
+				});
+			}
+		}
+	});
+};
 
 // Sammyjs navigation
 cmis.sammy = Sammy(function() {});
@@ -185,21 +220,7 @@ cmis.sammy.get(/#(.*)/, function() {
 		path = (path+'/').replace("//", "/");
 		cmis.vm.path(path);
 		cmis.vm.pathElements(path.split('/').slice(0,-1));
-		cmis.getObject(cmis.repo.rootFolderUrl + path, function(data) {
-			cmis.vm.obj(ko.mapping.fromJS(data));
-			if(cmis.vm.obj().properties['cmis:baseTypeId'].value() == 'cmis:folder') {
-				cmis.getChildren(cmis.repo.rootFolderUrl + path, function(data) {
-					cmis.vm.children(ko.mapping.fromJS(data));
-				},{maxItems:cmis.vm.pageSize()});
-			} else {
-				cmis.vm.children(null);
-				if(cmis.vm.obj().properties['cmis:baseTypeId'].value() == 'cmis:document') {
-					cmis.getContent(cmis.repo.rootFolderUrl + path, function(data) {
-						cmis.vm.objcontent(data);
-					});
-				}
-			}
-		});
+		cmis.loadPage();
 	}
 });
 
@@ -217,6 +238,9 @@ cmis.loginOnReturn = function (e) {
     }
 };
 
+cmis.vm.orders = function(){
+	return config.orders;
+}
 
 cmis.readableFileSize = function (size) {
     var units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
@@ -230,8 +254,6 @@ cmis.readableFileSize = function (size) {
 
 cmis.logout = function(){
 	cmis.vm.loggedIn(false);
-	cmis.vm.username(null);
-	cmis.vm.password(null);
 	$.ajaxSetup({
   		username: null,
   		password: null,  		
@@ -243,6 +265,19 @@ cmis.login = function(){
   		username: cmis.vm.username(),
   		password: cmis.vm.password(),  		
 	});
+
+	if (cmis.vm.rememberMe()){
+		store.set('username', cmis.vm.username());
+		store.set('password', cmis.vm.password());
+		store.set('rememberMe', cmis.vm.rememberMe());
+		store.set('autoLogin', cmis.vm.autoLogin());
+	} else {
+		store.set('username', null);
+		store.set('password', null);
+		store.set('rememberMe', false);
+		store.set('autoLogin', false);
+	}
+
 	// init
 	$.getJSON('/alfresco/cmisbrowser', function(data) {
 		cmis.vm.loggedIn(true);
@@ -261,5 +296,8 @@ cmis.login = function(){
 
 
 ko.applyBindings(cmis.vm);
+if (cmis.vm.autoLogin()){
+	cmis.login();
+}
 
 
