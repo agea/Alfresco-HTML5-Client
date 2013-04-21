@@ -22,6 +22,7 @@ cmis.vm.username = ko.observable(store.get('username'));
 cmis.vm.password = ko.observable(store.get('password'));
 cmis.vm.rememberMe = ko.observable(store.get('rememberMe'));
 cmis.vm.autoLogin = ko.observable(store.get('autoLogin'));
+cmis.vm.pdfjs = ko.observable(config.pdfjs);
 
 cmis.vm.orderDir.subscribe(function(newValue){
 	cmis.loadPage();
@@ -255,49 +256,100 @@ cmis.readableFileSize = function (size) {
 cmis.logout = function(){
 	cmis.vm.loggedIn(false);
 	$.ajaxSetup({
-  		username: null,
-  		password: null,  		
+		username: null,
+		password: null
 	});
 };
 
-cmis.login = function(){
-	$.ajaxSetup({
-  		username: cmis.vm.username(),
-  		password: cmis.vm.password(),  		
-	});
+cmis.login = function() {
 
-	if (cmis.vm.rememberMe()){
-		store.set('username', cmis.vm.username());
-		store.set('password', cmis.vm.password());
-		store.set('rememberMe', cmis.vm.rememberMe());
-		store.set('autoLogin', cmis.vm.autoLogin());
-	} else {
-		store.set('username', null);
-		store.set('password', null);
-		store.set('rememberMe', false);
-		store.set('autoLogin', false);
+	$.get('/alfresco/service/api/login' + cmis.toQuery({
+		u:cmis.vm.username(),
+		pw:cmis.vm.password()
+		}), function(data) {
+
+		$.ajaxSetup({
+			username: 'ROLE_TICKET',
+			password: data.firstChild.textContent
+		});
+
+		if (cmis.vm.rememberMe()) {
+			store.set('username', cmis.vm.username());
+			store.set('password', cmis.vm.password());
+			store.set('rememberMe', cmis.vm.rememberMe());
+			store.set('autoLogin', cmis.vm.autoLogin());
+		} else {
+			store.set('username', null);
+			store.set('password', null);
+			store.set('rememberMe', false);
+			store.set('autoLogin', false);
+		}
+
+		// init
+		$.getJSON('/alfresco/cmisbrowser', function(data) {
+			cmis.vm.loggedIn(true);
+			cmis.cb = data;
+			for (var repo in cmis.cb) {
+				cmis.repo = cmis.cb[repo];
+			}
+			cmis.getObject(cmis.repo.rootFolderUrl, function(data) {
+				cmis.vm.root(ko.mapping.fromJS(data));
+				cmis.vm.tree.removeAll();
+				cmis.getSubtree(cmis.vm.root().properties['cmis:objectId'].value(), cmis.vm.tree);
+				cmis.sammy.run();
+				$('.container-fluid').show();
+				$('.init').hide();
+			});
+		});
+
+
+	})
+
+};
+cmis.renderPDF = function(objectId, canvas) {
+
+	if (_.isUndefined(window.PDFJS)){
+		head.js("js/lib/pdf.js", function(){
+			cmis.renderPDF(objectId, canvas);
+		});
+		return;
 	}
 
-	// init
-	$.getJSON('/alfresco/cmisbrowser', function(data) {
-		cmis.vm.loggedIn(true);
-		cmis.cb = data;
-		for(var repo in cmis.cb) {
-			cmis.repo = cmis.cb[repo];
-		}
-		cmis.getObject(cmis.repo.rootFolderUrl, function(data) {
-			cmis.vm.root(ko.mapping.fromJS(data));
-			cmis.vm.tree.removeAll();
-			cmis.getSubtree(cmis.vm.root().properties['cmis:objectId'].value(), cmis.vm.tree);
-			cmis.sammy.run();
+	var url = cmis.repo.rootFolderUrl+'?cmisselector=content&objectId=' + objectId;
+	PDFJS.workerSrc = 'js/lib/pdf.js';
+	PDFJS.getDocument(url).then(function(pdf) {
+		// Using promise to fetch the page
+		pdf.getPage(1).then(function(page) {
+			var scale = 1;
+			var viewport = page.getViewport(scale);
+
+			//
+			// Prepare canvas using PDF page dimensions
+			//
+			
+			var context = canvas.getContext('2d');
+			canvas.height = viewport.height;
+			canvas.width = viewport.width;
+
+			//
+			// Render PDF page into canvas context
+			//
+			var renderContext = {
+				canvasContext: context,
+				viewport: viewport
+			};
+			page.render(renderContext);
 		});
 	});
-};
-
+}
 
 ko.applyBindings(cmis.vm);
 if (cmis.vm.autoLogin()){
 	cmis.login();
+} else {
+	$('.container-fluid').show();
+	$('.init').hide();
 }
+
 
 

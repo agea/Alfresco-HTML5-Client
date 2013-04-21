@@ -9,11 +9,12 @@
 	<!--[if IE 7]>
 	<link rel="stylesheet" href="css/fontawesome/css/font-awesome-ie7.min.css">
 	<![endif]-->
+	<script src="js/lib/head.load.min.js"></script>
 </head>
 
 <body id="body">
 
-	<div class="container-fluid" >
+	<div class="container-fluid" style="display:none;">
 		
 		<div data-bind="foreach: alerts">
 			<div data-bind="css: {'alert-error': error}"
@@ -74,7 +75,7 @@
 
 		<!-- ko if: loggedIn() -->
 		<!-- ko if: obj -->
-		<div class="row">
+		<div class="row-fluid">
 			<h1 class="span8" style="position:relative;">
 				<a href="#">
 					<img src="/share/res/themes/default/images/app-logo-48.png" alt=" " 
@@ -84,9 +85,9 @@
 				style="position:absolute;font-size: 48px;" ></i>
 				<span style="padding-left:64px" data-bind="text: obj().properties['cmis:name'].value"></span>
 			</h1>
-			<div class="span3 form-search">
-			  <div class="input-append"  style="position:relative; top: 18px;">
-			    <input type="search" class="span4 search-query" 
+			<div class="span4 form-search">
+			  <div class="input-append pull-right"  style="position:relative; top: 18px;">
+			    <input type="search" class="search-query" 
 			    	data-bind="value: squery, valueUpdate: 'keyup'">
 			    <a href="javascript:void(0)" type="button" class="btn">
 			    	<i data-bind="css: {'icon-search': !searching(), 
@@ -183,7 +184,7 @@
 			</div>
 			<div class="span2">
 
-				<div class="btn-group">
+				<div class="btn-group pull-right">
 				  <a class="btn" href="javascript:void(0)"
 				  	onclick="cmis.switchOrderDir()">
 				    <i data-bind="css: {'icon-arrow-down':orderDir()=='asc',
@@ -231,7 +232,13 @@
 
 
 				<div class="thumbnail" style="position:relative;"> 
+				<canvas id="pdfArea"></canvas>
 				<div class="btn-group" style="position:absolute;right:4px;" >
+				  <a class="btn" href="javascript:void(0)"
+				  	data-bind="visible: pdfjs"
+				  	onclick="cmis.renderPDF(cmis.vm.obj().properties['cmis:objectId'].value(),document.getElementById('pdfArea'))">
+					<i class="icon-2x icon-eye-open"></i>
+				  </a>
 				  <a class="btn" data-bind="attr:{href: window.location.href}">
 					<i class="icon-2x icon-link"></i>
 				  </a>
@@ -351,15 +358,16 @@
 	  	</div>
 	</div>
 
-	<script src="js/lib/jquery.min.js"></script>
-	<script src="js/lib/knockout-2.2.0.js"></script>
-	<script src="js/lib/sammy-latest.min.js"></script>
-	<script src="js/lib/underscore-min.js"></script>
-	<script src="js/lib/store.min.js"></script>
-	<script src="css/bootstrap/js/bootstrap.min.js"></script>
-	<script src="js/lib/knockout.mapping-latest.js"></script>
-	<script src="js/config.js"></script>
-	<script src="js/cmisbrowser.js"></script>
+	<div class="init hero-unit" style="text-align:center">
+		<i class="icon-spinner icon-spin"></i>&nbsp;Initializing
+		<p class="muted" style="padding-top: 2em;">If you keep seeing this, something got wrong</p>
+	</div>
+
+	<script type="text/javascript">
+		head.js('js/config.js', function(){
+			head['js'].apply(window,config.scripts);					
+		});
+	</script>
 
 </body>
 </html>
