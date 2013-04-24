@@ -9,12 +9,13 @@
 	<!--[if IE 7]>
 	<link rel="stylesheet" href="css/fontawesome/css/font-awesome-ie7.min.css">
 	<![endif]-->
+	<link rel="stylesheet" href="css/screen.css">
 	<script src="js/lib/head.load.min.js"></script>
 </head>
 
 <body id="body">
 
-	<div class="container-fluid" style="display:none;">
+	<div class="container-fluid" class="hidden">
 		
 		<div data-bind="foreach: alerts">
 			<div data-bind="css: {'alert-error': error}"
@@ -31,7 +32,7 @@
 		<!-- ko if: !loggedIn() -->
 		<div class="row-fluid">
 				
-				<div class="span6 offset3 well" style="text-align:center;margin-top:1em;">
+				<div class="span6 offset3 well loginContainer">
 					<h1>Alfresco HTML5 Client</h1>
 					<br/>
 					<form >
@@ -76,17 +77,18 @@
 		<!-- ko if: loggedIn() -->
 		<!-- ko if: obj -->
 		<div class="row-fluid">
-			<h1 class="span8" style="position:relative;">
+			<h1 class="span8 relative">
 				<a href="#">
 					<img src="/share/res/themes/default/images/app-logo-48.png" alt=" " 
-				style="position:absolute;" data-bind="visible: ajaxStatus()=='ok'" />
+				class="absolute" data-bind="visible: ajaxStatus()=='ok'" />
 				</a>
-				<i class="icon-spinner icon-spin" data-bind="visible: ajaxStatus()=='working'"
-				style="position:absolute;font-size: 48px;" ></i>
-				<span style="padding-left:64px" data-bind="text: obj().properties['cmis:name'].value"></span>
+				<i class="icon-spinner icon-spin bigSpinner" 
+					data-bind="visible: ajaxStatus()=='working'"></i>
+				<span class="title" 
+					data-bind="text: obj().properties['cmis:name'].value"></span>
 			</h1>
 			<div class="span4 form-search">
-			  <div class="input-append pull-right"  style="position:relative; top: 18px;">
+			  <div class="input-append pull-right"  >
 			    <input type="search" class="search-query" 
 			    	data-bind="value: squery, valueUpdate: 'keyup'">
 			    <a href="javascript:void(0)" type="button" class="btn">
@@ -101,22 +103,25 @@
 		<div class="row-fluid" data-bind="if: sresults">
 			<div class="span12" id="searchresults" >
 				<h3>
-					<a class="pull-right" href="javascript:void(0)" onclick="cmis.vm.squery(null)">
-					<i class="icon-remove"></i></a>
+					<a class="pull-right" 
+						href="javascript:void(0)" 
+						onclick="cmis.vm.squery(null)">
+						<i class="icon-remove"></i>
+					</a>
 					<span data-bind="text: squery"></span> 
 					(<span data-bind="text: sresults().numItems"></span><span data-bind="if: sresults().hasMoreItems">+</span>)
 				</h3>
 				<div class="span12 thumbnails"> 
 					<!-- ko foreach: sresults().results -->
-					<div class="thumbnail pull-left" style="height: 118px; width: 310px; margin-right: 10px; margin-bottom: 10px" >
-						<a class="pull-left" data-bind="attr:{
+					<div class="thumbnail pull-left child" >
+						<a class="pull-left doclib" data-bind="attr:{
 						href: '#' + $data.properties['cmis:objectId'].value,
-						style: 'margin:4px; height: 100px; width: 100px; background: url(/alfresco/service/api/node/'
+						style: 'background: url(/alfresco/service/api/node/'
 						+ $data.properties['alfcmis:nodeRef'].value.replace(':/','')
 						+ '/content/thumbnails/doclib?c=queue&ph=true) center no-repeat'}"
 						>
 						</a>
-						<div style="width: 200px; overflow: hidden;padding-left: 2px;">
+						<div class="details">
 							<div><a data-bind="attr:{
 								href: '#' + $data.properties['cmis:objectId'].value},
 								text: $data.properties['cmis:name'].value"></a>
@@ -141,16 +146,15 @@
 					</div>
 					<!-- /ko -->
 					<!-- ko if: sresults().hasMoreItems -->
-					<div class="thumbnail pull-left" 
-						style="height: 118px; width: 310px; margin-right: 10px; margin-bottom: 10px">
-						<a style="padding: 10px;text-align:center;display:block;" 
+					<div class="thumbnail pull-left child">
+						<a class="more" 
 							href="javascript:void(0)" data-bind="if: !searching()"
 							onclick="cmis.nextSearchPage()">
-							<i style="font-size: 80px" class="icon-forward"></i>
+							<i  class="icon-forward"></i>
 						</a>
 						<!-- ko if: searching() -->
-						<i style="font-size: 80px;text-align:center;display:block;"
-						 class="icon-spinner icon-spin"></i>
+						<i
+						 class="more icon-spinner icon-spin"></i>
 						<!-- /ko -->
 					</div>
 					<!-- /ko -->
@@ -231,12 +235,13 @@
 			<section data-bind="if: obj().properties['cmis:baseTypeId'].value() == 'cmis:document'">
 
 
-				<div class="thumbnail" style="position:relative;"> 
-				<canvas id="pdfArea"></canvas>
+				<div class="thumbnail relative"> 
+					
+				
 				<div class="btn-group" style="position:absolute;right:4px;" >
 				  <a class="btn" href="javascript:void(0)"
-				  	data-bind="visible: pdfjs"
-				  	onclick="cmis.renderPDF(cmis.vm.obj().properties['cmis:objectId'].value(),document.getElementById('pdfArea'))">
+				  	data-bind="visible: cmis.preview(obj)"
+				  	onclick="cmis.preview(cmis.vm.obj)(cmis.vm.obj)">
 					<i class="icon-2x icon-eye-open"></i>
 				  </a>
 				  <a class="btn" data-bind="attr:{href: window.location.href}">
@@ -360,7 +365,17 @@
 
 	<div class="init hero-unit" style="text-align:center">
 		<i class="icon-spinner icon-spin"></i>&nbsp;Initializing
-		<p class="muted" style="padding-top: 2em;">If you keep seeing this, something got wrong</p>
+		<p class="muted" >
+			If you keep seeing this, something got wrong
+		</p>
+	</div>
+
+	<div id="docpreview" >
+		<a href="javascript:void:0" 
+			onclick="$('#docpreview').hide();">
+			<i class="icon-2x icon-remove-sign"></i>
+		</a>
+		<iframe src="" border="0" frameborder="0"></iframe>
 	</div>
 
 	<script type="text/javascript">

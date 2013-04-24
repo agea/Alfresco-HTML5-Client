@@ -1,0 +1,95 @@
+.loginContainer {
+	text-align:center;
+	margin-top:1em;
+}
+
+.hidden {
+	display:none;
+}
+
+.relative{
+	position:relative;
+}
+.absolute{
+	position:absolute;
+}
+.fixed{
+	position:fixed;
+}
+
+.bigSpinner{
+	position:absolute;
+	font-size: 48px;
+}
+
+.title{
+	padding-left:64px;
+}
+
+.init p{
+	padding-top: 2em;
+}
+
+.form-search > div {
+	position:relative; 
+	top: 18px;
+}
+
+.child {
+	height: 118px; 
+	width: 310px; 
+	margin-right: 10px; 
+	margin-bottom: 10px;
+	overflow: hidden;
+}
+
+
+.child .doclib{
+	margin:4px; 
+	height: 100px; 
+	width: 100px;
+}
+
+.child .more{
+	text-align:center;
+	display:block;
+}
+
+.child a.more{
+		padding: 10px;
+}
+
+.child .more i, .child i.more{
+	font-size: 80px;
+}
+
+.child .details{
+	width: 200px; 
+	overflow: hidden;
+	padding-left: 2px;
+}
+
+#docpreview{
+	display:none;
+	position:fixed;
+	top:0;
+	left:0;
+	height:100%; 
+	width:100%;
+ 	background-color: rgba(0, 0, 0, 0.8);
+ }
+
+#docpreview a{
+	position:absolute;
+	top:0;
+	right:0;
+	color:white;
+}
+
+#docpreview > iframe{
+	height:90%;
+	width:90%;
+	margin-top:2%;
+	margin-left:5%;
+	background: white;
+}

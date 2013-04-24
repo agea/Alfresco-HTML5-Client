@@ -306,41 +306,13 @@ cmis.login = function() {
 	})
 
 };
-cmis.renderPDF = function(objectId, canvas) {
 
-	if (_.isUndefined(window.PDFJS)){
-		head.js("js/lib/pdf.js", function(){
-			cmis.renderPDF(objectId, canvas);
-		});
-		return;
-	}
-
-	var url = cmis.repo.rootFolderUrl+'?cmisselector=content&objectId=' + objectId;
-	PDFJS.workerSrc = 'js/lib/pdf.js';
-	PDFJS.getDocument(url).then(function(pdf) {
-		// Using promise to fetch the page
-		pdf.getPage(1).then(function(page) {
-			var scale = 1;
-			var viewport = page.getViewport(scale);
-
-			//
-			// Prepare canvas using PDF page dimensions
-			//
-			
-			var context = canvas.getContext('2d');
-			canvas.height = viewport.height;
-			canvas.width = viewport.width;
-
-			//
-			// Render PDF page into canvas context
-			//
-			var renderContext = {
-				canvasContext: context,
-				viewport: viewport
-			};
-			page.render(renderContext);
-		});
-	});
+cmis.preview = function(obj){
+	var v = config.viewers[obj().properties['cmis:contentStreamMimeType'].value()];
+	if (!_.isUndefined(v)){
+		return v;
+	} 
+	return false;
 }
 
 ko.applyBindings(cmis.vm);
