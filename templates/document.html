@@ -1,0 +1,41 @@
+
+			<section data-bind="if: obj().properties['cmis:baseTypeId'].value() == 'cmis:document'">
+
+
+				<div class="thumbnail relative"> 
+					
+				
+				<div class="btn-group" style="position:absolute;right:4px;" >
+				  <a class="btn" href="javascript:void(0)"
+				  	data-bind="visible: cmis.preview(obj)"
+				  	onclick="cmis.preview(cmis.vm.obj)(cmis.vm.obj)">
+					<i class="icon-2x icon-eye-open"></i>
+				  </a>
+				  <a class="btn" data-bind="attr:{href: window.location.href}">
+					<i class="icon-2x icon-link"></i>
+				  </a>
+				  <a href="" class="btn" target="_blank" data-bind="attr: {title: cmis.readableFileSize(obj().properties['cmis:contentStreamLength'].value()),
+					href: cmis.repo.rootFolderUrl+'?cmisselector=content&objectId=' + obj().properties['cmis:objectId'].value()}">
+					<i class="icon-2x icon-download-alt"></i>
+				</a>
+				</div>
+				<img data-bind="attr: {src: '/alfresco/service/api/node/'
+						    	+ obj().properties['alfcmis:nodeRef'].value().replace(':/','')
+						    	+ '/content/thumbnails/imgpreview?c=queue&ph=true'}" />
+				</div>
+				<table class="table table-hover" data-bind="foreach:_.keys(obj().properties)">
+					<tbody>
+						<!-- ko if: $data.indexOf('cmis:')==0 -->
+							<tr data-bind="with: $root.obj().properties[$data]">
+								<th data-bind="text: displayName"></th>
+								<!-- ko if: type()=='datetime'-->
+									<td data-bind="text: new Date(value())"></td>
+								<!-- /ko -->
+								<!-- ko if: type()!='datetime'-->
+									<td data-bind="text: value"></td>
+								<!-- /ko -->									
+							</tr>
+						<!-- /ko -->
+					</tbody>
+				</table>
+			</section>

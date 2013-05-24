@@ -1,0 +1,10 @@
+ <li>
+ 	<a class="btn icon-folder-close" 
+ 	href="javascript:void(0);" 
+ 	data-bind="click: $root.toggleSubtree,
+ 	css : {'icon-folder-close': !expanded(),
+ 	'icon-folder-open' : expanded()}">
+ </a>&nbsp;
+ <a data-bind="text: name, attr: {href: '#' + path}"></a>
+ <ul data-bind="template: { name: 'templates/treenode', foreach: tree }"></ul>
+</li>

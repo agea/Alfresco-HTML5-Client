@@ -1,0 +1,41 @@
+
+<!-- ko if: object.properties['cmis:baseTypeId'].value() == 'cmis:document' -->
+		<a class="pull-left" data-bind="attr:{
+			href: '#' + $root.path() + object.properties['cmis:name'].value(),
+			style: 'margin:4px; height: 100px; width: 100px; background: url(' + cmis.tnURL(object.properties['alfcmis:nodeRef'].value(),'doclib') + ') center no-repeat'}"
+	    	>
+		</a>
+		<div style="width: 200px; overflow: hidden;padding-left: 2px;">
+			<div><a data-bind="attr:{
+			href: '#' + $root.path() + object.properties['cmis:name'].value()},
+			text: object.properties['cmis:name'].value"></a>
+			
+			</div>
+			<a href="" class="pull-right" target="_blank" data-bind="attr: {title: cmis.readableFileSize(object.properties['cmis:contentStreamLength'].value()),
+				href: cmis.contentURL(object.properties['cmis:objectId'].value())}">
+					<i class="icon-2x icon-download-alt"></i>
+			</a>
+			<div>
+				<i class="icon-user"></i>
+				<span data-bind="text: object.properties['cmis:lastModifiedBy'].value()"></span>
+			</div>
+			<div>
+				<span data-bind="text: cmis.readableFileSize(object.properties['cmis:contentStreamLength'].value())"></span>
+			</div>
+			<div>
+				<span class="label" data-bind="text: object.properties['cmis:versionLabel'].value()"></span>
+			</div>
+		</div>
+<!-- /ko -->
+
+<!-- ko if: object.properties['cmis:baseTypeId'].value() != 'cmis:document' -->
+		<a class="pull-left" data-bind="attr:{
+			href: '#' + $root.path() + object.properties['cmis:name'].value(),
+			style: 'padding:10px;margin:4px; height: 100px; width: 100px;'}"
+	    	>
+	    	<i style="font-size: 80px" class="icon-folder-close-alt"></i>
+		</a>
+			<a style="position:relative; top: 35px;" data-bind="attr:{
+			href: '#' + $root.path() + object.properties['cmis:name'].value()},
+			text: object.properties['cmis:name'].value"></a>
+<!-- /ko -->

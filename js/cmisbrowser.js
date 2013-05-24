@@ -18,6 +18,7 @@ cmis.vm.pageSize = ko.observable(config.pageSize);
 cmis.vm.order = ko.observable(config.orders[0]);
 cmis.vm.orderDir = ko.observable('asc');
 cmis.vm.loggedIn = ko.observable(false);
+cmis.vm.ticket = ko.observable();
 cmis.vm.username = ko.observable(store.get('username'));
 cmis.vm.password = ko.observable(store.get('password'));
 cmis.vm.rememberMe = ko.observable(store.get('rememberMe'));
@@ -31,6 +32,17 @@ cmis.vm.order.subscribe(function(newValue){
 	cmis.loadPage();
 });
 
+cmis.vm.ticket.subscribe(function(ticket){
+	var encode = window.btoa || Base64.encode;
+	$.ajaxSetup({
+	    beforeSend: function (jqXHR, settings) {
+	    	var auth = "Basic " + encode('ROLE_TICKET:' + ticket);
+	    	jqXHR.setRequestHeader("Authorization", auth);
+			}
+	});
+});
+
+
 cmis.switchOrderDir = function(){
 	if (cmis.vm.orderDir()=='asc'){
 		cmis.vm.orderDir('desc');
@@ -38,6 +50,17 @@ cmis.switchOrderDir = function(){
 		cmis.vm.orderDir('asc');
 	}
 }
+
+cmis.tnURL = function(objectId, name) {
+	return "/alfresco/service/api/node/" + objectId.replace(':/', '').split(";")[0] +
+		"/content/thumbnails/" + name + "?c=queue&ph=true&alf_ticket=" + cmis.vm.ticket();
+}
+
+cmis.contentURL = function(objectId) {
+	return "/alfresco/service/api/node/content/" + objectId.replace(':/', '').split(";")[0] +
+	 "?alf_ticket=" + cmis.vm.ticket();
+}
+
 
 cmis.nextSearchPage = function(){
 	cmis.search(cmis.vm.sresults().numItems);
@@ -263,47 +286,51 @@ cmis.logout = function(){
 
 cmis.login = function() {
 
-	$.get('/alfresco/service/api/login' + cmis.toQuery({
-		u:cmis.vm.username(),
-		pw:cmis.vm.password()
-		}), function(data) {
+	$.ajax({
+		url:'/alfresco/service/api/login',
 
-		$.ajaxSetup({
-			username: 'ROLE_TICKET',
-			password: data.firstChild.textContent
-		});
+		data:JSON.stringify(
+			{username:cmis.vm.username(),
+			password:cmis.vm.password()}),
 
-		if (cmis.vm.rememberMe()) {
-			store.set('username', cmis.vm.username());
-			store.set('password', cmis.vm.password());
-			store.set('rememberMe', cmis.vm.rememberMe());
-			store.set('autoLogin', cmis.vm.autoLogin());
-		} else {
-			store.set('username', null);
-			store.set('password', null);
-			store.set('rememberMe', false);
-			store.set('autoLogin', false);
-		}
+		contentType: 'application/json',
+	    type: 'POST',
+	    dataType: 'json',
 
-		// init
-		$.getJSON('/alfresco/cmisbrowser', function(data) {
-			cmis.vm.loggedIn(true);
-			cmis.cb = data;
-			for (var repo in cmis.cb) {
-				cmis.repo = cmis.cb[repo];
+		success: function(data) {
+			cmis.vm.ticket(data.data.ticket);
+
+			if (cmis.vm.rememberMe()) {
+				store.set('username', cmis.vm.username());
+				store.set('password', cmis.vm.password());
+				store.set('rememberMe', cmis.vm.rememberMe());
+				store.set('autoLogin', cmis.vm.autoLogin());
+			} else {
+				store.set('username', null);
+				store.set('password', null);
+				store.set('rememberMe', false);
+				store.set('autoLogin', false);
 			}
-			cmis.getObject(cmis.repo.rootFolderUrl, function(data) {
-				cmis.vm.root(ko.mapping.fromJS(data));
-				cmis.vm.tree.removeAll();
-				cmis.getSubtree(cmis.vm.root().properties['cmis:objectId'].value(), cmis.vm.tree);
-				cmis.sammy.run();
-				$('.container-fluid').show();
-				$('.init').hide();
+
+			// init
+			$.getJSON('/alfresco/cmisbrowser', function(data) {
+				cmis.vm.loggedIn(true);
+				cmis.cb = data;
+				for (var repo in cmis.cb) {
+					cmis.repo = cmis.cb[repo];
+				}
+				cmis.getObject(cmis.repo.rootFolderUrl, function(data) {
+					cmis.vm.root(ko.mapping.fromJS(data));
+					cmis.vm.tree.removeAll();
+					cmis.getSubtree(cmis.vm.root().properties['cmis:objectId'].value(), cmis.vm.tree);
+					cmis.sammy.run();
+					$('.container-fluid').show();
+					$('.init').hide();
+				});
 			});
-		});
 
 
-	})
+	}})
 
 };
 
@@ -314,6 +341,8 @@ cmis.preview = function(obj){
 	} 
 	return false;
 }
+
+infuser.defaults.ajax.cache = false;
 
 ko.applyBindings(cmis.vm);
 if (cmis.vm.autoLogin()){

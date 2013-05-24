@@ -1,0 +1,60 @@
+<div class="span12" id="searchresults" >
+	<h3>
+		<a class="pull-right" 
+		href="javascript:void(0)" 
+		onclick="cmis.vm.squery(null)">
+		<i class="icon-remove"></i>
+	</a>
+	<span data-bind="text: squery"></span> 
+	(<span data-bind="text: sresults().numItems"></span><span data-bind="if: sresults().hasMoreItems">+</span>)
+</h3>
+<div class="span12 thumbnails"> 
+	<!-- ko foreach: sresults().results -->
+	<div class="thumbnail pull-left child" >
+		<a class="pull-left doclib" data-bind="attr:{
+		href: '#' + $data.properties['cmis:objectId'].value,
+		style: 'background: url(/alfresco/service/api/node/'
+		+ $data.properties['alfcmis:nodeRef'].value.replace(':/','')
+		+ '/content/thumbnails/doclib?c=queue&ph=true) center no-repeat'}"
+		>
+	</a>
+	<div class="details">
+		<div><a data-bind="attr:{
+			href: '#' + $data.properties['cmis:objectId'].value},
+			text: $data.properties['cmis:name'].value"></a>
+
+		</div>
+		<a href="" class="pull-right" target="_blank" data-bind="attr: {title: cmis.readableFileSize($data.properties['cmis:contentStreamLength'].value),
+		href: cmis.repo.rootFolderUrl+'?cmisselector=content&objectId=' + $data.properties['cmis:objectId'].value}">
+		<i class="icon-2x icon-download-alt"></i>
+	</a>
+	<div>
+		<i class="icon-user"></i>
+		<span data-bind="text: $data.properties['cmis:lastModifiedBy'].value"></span>
+	</div>
+	<div>
+		<span data-bind="text: cmis.readableFileSize($data.properties['cmis:contentStreamLength'].value)"></span>
+	</div>
+	<div>
+		<span class="label" data-bind="text: $data.properties['cmis:versionLabel'].value"></span>
+	</div>
+</div>
+
+</div>
+<!-- /ko -->
+<!-- ko if: sresults().hasMoreItems -->
+<div class="thumbnail pull-left child">
+	<a class="more" 
+	href="javascript:void(0)" data-bind="if: !searching()"
+	onclick="cmis.nextSearchPage()">
+	<i  class="icon-forward"></i>
+</a>
+<!-- ko if: searching() -->
+<i
+class="more icon-spinner icon-spin"></i>
+<!-- /ko -->
+</div>
+<!-- /ko -->
+</div>
+<hr/>
+</div>

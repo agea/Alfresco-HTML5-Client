@@ -1,0 +1,38 @@
+<div class="span6 offset3 well loginContainer">
+	<h1>Alfresco HTML5 Client</h1>
+	<br/>
+	<form >
+		<div class="input-prepend">
+			<span class="add-on"><i class="icon-user"></i></span>
+			<input type="text" data-bind="value: username, valueUpdate: 'keyup'" 
+			autofocus placeholder="username" onkeydown="cmis.loginOnReturn(event)"/>
+		</div>
+		<div class="input-prepend">
+			<span class="add-on"><i class="icon-key"></i></span>
+			<input type="password" data-bind="value: password, valueUpdate: 'keyup'"
+			placeholder="password" onkeydown="cmis.loginOnReturn(event)" />
+		</div>
+		<br/>
+		<div class="row">
+			<div class="span3 offset3">
+				<label class="checkbox">
+					<input type="checkbox" data-bind="checked: rememberMe" />
+					Remember Me
+				</label>
+			</div>
+			<div class="span3 offset1">
+				<label class="checkbox">
+					<input type="checkbox" data-bind="checked: autoLogin" />
+					Keep me logged in
+				</label>
+			</div>
+		</div>
+		<hr/>
+		<a href="javascript:void(0)" id="loginButton"
+		data-bind="css: {disabled: !username() || !password()}"
+		onclick="if (cmis.vm.username() && cmis.vm.password()) cmis.login()"
+		class="btn btn-primary btn-block btn-large">
+		<i class="icon-signin"></i>&nbsp;Login
+	</a>
+</form>
+</div>

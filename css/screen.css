@@ -69,6 +69,14 @@
 	padding-left: 2px;
 }
 
+.tree ul{
+	list-style-type: none;
+}
+
+.tree ul li {
+	padding: 4px 0;
+}
+
 #docpreview{
 	display:none;
 	position:fixed;
