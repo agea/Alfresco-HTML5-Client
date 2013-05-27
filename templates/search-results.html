@@ -13,9 +13,7 @@
 	<div class="thumbnail pull-left child" >
 		<a class="pull-left doclib" data-bind="attr:{
 		href: '#' + $data.properties['cmis:objectId'].value,
-		style: 'background: url(/alfresco/service/api/node/'
-		+ $data.properties['alfcmis:nodeRef'].value.replace(':/','')
-		+ '/content/thumbnails/doclib?c=queue&ph=true) center no-repeat'}"
+		style: 'background: url('+cmis.tnURL($data.properties['cmis:objectId'].value,'doclib') + ') center no-repeat'}"
 		>
 	</a>
 	<div class="details">

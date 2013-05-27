@@ -30,17 +30,12 @@ config.pdfjs = true;
 
 config.viewers = {
 	'application/pdf': function(obj) {
-		var url = 'viewers/pdfjs/viewer.html?file=' +
+		return 'viewers/pdfjs/viewer.html?file=' +
 			encodeURIComponent(cmis.contentURL( 
 			cmis.vm.obj().properties['cmis:objectId'].value()));
-		$('#docpreview iframe').attr('src', url);
-		$('#docpreview').show();
 	},
 	'text/plain': function(obj){
-		var url = cmis.repo.rootFolderUrl +
-			'?cmisselector=content&objectId=' + 
-			cmis.vm.obj().properties['cmis:objectId'].value();
-		$('#docpreview iframe').attr('src', url);
-		$('#docpreview').show();		
+		return cmis.contentURL( 
+			cmis.vm.obj().properties['cmis:objectId'].value());
 	}
 }

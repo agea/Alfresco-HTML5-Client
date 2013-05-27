@@ -3,9 +3,8 @@
 <div class="thumbnail relative"> 
 
 <div class="btn-group" style="position:absolute;right:4px;" >
-  <!-- ko if: cmis.preview(obj)-->
-  <a class="btn" href="javascript:void(0)"
-  	onclick="cmis.preview(cmis.vm.obj)(cmis.vm.obj)">
+  <!-- ko with: cmis.preview(obj)-->
+  <a class="btn" target="_blank" data-bind="attr: {href: $data()}" >
 	<i class="icon-2x icon-eye-open"></i>
   </a>
   <!-- /ko -->
