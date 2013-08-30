@@ -24,3 +24,7 @@ At the moment is implemented a simple folder browsing with document preview and 
 *  Aspect properties support
 *  Customization support
 *  Testing
+
+##License
+
+MIT license - [http://www.opensource.org/licenses/mit-license.php](http://www.opensource.org/licenses/mit-license.php)
