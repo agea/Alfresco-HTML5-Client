@@ -56,9 +56,24 @@ cmis.tnURL = function(objectId, name) {
 		"/content/thumbnails/" + name + "?c=queue&ph=true&alf_ticket=" + cmis.vm.ticket();
 }
 
-cmis.contentURL = function(objectId) {
-	return "/alfresco/service/api/node/content/" + objectId.replace(':/', '').split(";")[0] +
-	 "?alf_ticket=" + cmis.vm.ticket();
+cmis.contentURL = function(object, inline) {
+	if (_.isFunction(object)){
+		object = object();
+	}
+	var id = object.properties['cmis:objectId'].value;
+	if(_.isFunction(id)){
+		id = id()
+	}
+	var name = object.properties['cmis:name'].value;
+	if(_.isFunction(name)){
+		name = name()
+	}
+
+
+	var url = '/alfresco/d/'+ (inline==true ? 'd' : 'a' )+ '/' + id.replace(':/', '').split(";")[0];
+	url += "/" + name;
+	url += "?ticket=" + cmis.vm.ticket();
+	return url;
 }
 
 

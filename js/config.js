@@ -31,11 +31,9 @@ config.pdfjs = true;
 config.viewers = {
 	'application/pdf': function(obj) {
 		return 'viewers/pdfjs/viewer.html?file=' +
-			encodeURIComponent(cmis.contentURL( 
-			cmis.vm.obj().properties['cmis:objectId'].value()));
+			encodeURIComponent(cmis.contentURL(cmis.vm.obj));
 	},
-	'text/plain': function(obj){
-		return cmis.contentURL( 
-			cmis.vm.obj().properties['cmis:objectId'].value());
-	}
+	'text/plain': function(obj){return cmis.contentURL(cmis.vm.obj, true);},
+	'image/jpeg': function(obj){return cmis.contentURL(cmis.vm.obj, true);},
+	'image/png': function(obj){return cmis.contentURL(cmis.vm.obj, true);}
 }

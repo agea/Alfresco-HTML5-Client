@@ -23,7 +23,7 @@
 
 		</div>
 		<a href="" class="pull-right" target="_blank" data-bind="attr: {title: cmis.readableFileSize($data.properties['cmis:contentStreamLength'].value),
-		href: cmis.repo.rootFolderUrl+'?cmisselector=content&objectId=' + $data.properties['cmis:objectId'].value}">
+		href: cmis.contentURL($data)}">
 		<i class="icon-2x icon-download-alt"></i>
 	</a>
 	<div>
