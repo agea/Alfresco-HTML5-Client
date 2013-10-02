@@ -282,6 +282,9 @@ cmis.vm.orders = function(){
 }
 
 cmis.readableFileSize = function (size) {
+	if (!_.isNumber(size)){
+		return '-';
+	} 
     var units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
     var i = 0;
     while(size >= 1024) {
@@ -296,6 +299,17 @@ cmis.logout = function(){
 	$.ajaxSetup({
 		username: null,
 		password: null
+	});
+};
+
+cmis.loadRoot = function(){
+	cmis.getObject(cmis.repo.rootFolderUrl, function(data) {
+		cmis.vm.root(ko.mapping.fromJS(data));
+		cmis.vm.tree.removeAll();
+		cmis.getSubtree(cmis.repo.rootFolderId, cmis.vm.tree);
+		cmis.sammy.run();
+		$('.container-fluid').show();
+		$('.init').hide();
 	});
 };
 
@@ -334,16 +348,14 @@ cmis.login = function() {
 				for (var repo in cmis.cb) {
 					cmis.repo = cmis.cb[repo];
 				}
-				cmis.getObject(cmis.repo.rootFolderUrl, function(data) {
-					cmis.vm.root(ko.mapping.fromJS(data));
-					cmis.vm.tree.removeAll();
-					cmis.getSubtree(cmis.vm.root().properties['cmis:objectId'].value(), cmis.vm.tree);
-					cmis.sammy.run();
-					$('.container-fluid').show();
-					$('.init').hide();
-				});
+				if (parseFloat(cmis.repo.productVersion)<4.2){
+					head.js(config.compat40, function(){
+						cmis.loadRoot();
+					});
+				} else{
+					cmis.loadRoot();
+				}
 			});
-
 
 	}})
 

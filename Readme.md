@@ -16,6 +16,8 @@ At the moment is implemented a simple folder browsing with document preview and 
 *  Extract the .zip and copy the Alfresco-HTML5-Client folder in tomcat/webapps/ROOT of your Alfresco installation
 *  Access http://localhost:8080/Alfresco-HTML5-Client
 
+
+
 #TODO
 
 *  Write support

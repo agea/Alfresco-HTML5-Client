@@ -23,10 +23,9 @@ if (window.btoa===undefined){
 	config.scripts.push("js/lib/base64.min.js");
 }
 
+config.compat40 = "js/cmisbrowser-4.0-compat.js";
 
 config.pdfjs = true;
-
-
 
 config.viewers = {
 	'application/pdf': function(obj) {
