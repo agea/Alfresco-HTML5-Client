@@ -30,3 +30,5 @@ At the moment is implemented a simple folder browsing with document preview and 
 ##License
 
 MIT license - [http://www.opensource.org/licenses/mit-license.php](http://www.opensource.org/licenses/mit-license.php)
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/agea/alfresco-html5-client/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
