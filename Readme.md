@@ -1,4 +1,4 @@
-#Alfresco HTML5 Client
+# Alfresco HTML5 Client
 
 A simple alfresco client written only in HTML5 and Javascript. 
 
@@ -10,7 +10,7 @@ At the moment is implemented a simple folder browsing with document preview and 
 *  It uses [KnockoutJS](http://www.knockoutjs.com) to implement the Model View ViewModel Pattern
 *  Presentation layer is built with [Twitter Bootstrap](http://twitter.github.com/bootstrap) and [FontAwesome](http://fortawesome.github.com/Font-Awesome/).
 
-#Usage 
+# Usage 
 
 *  Download [here](https://github.com/agea/Alfresco-HTML5-Client/archive/master.zip)
 *  Extract the .zip and copy the Alfresco-HTML5-Client folder in tomcat/webapps/ROOT of your Alfresco installation
@@ -18,7 +18,7 @@ At the moment is implemented a simple folder browsing with document preview and 
 
 
 
-#TODO
+# TODO
 
 *  Write support
 *  Better document view
@@ -27,6 +27,6 @@ At the moment is implemented a simple folder browsing with document preview and 
 *  Customization support
 *  Testing
 
-##License
+## License
 
 MIT license - [http://www.opensource.org/licenses/mit-license.php](http://www.opensource.org/licenses/mit-license.php)
